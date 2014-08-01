@@ -17,7 +17,7 @@ public class ApplicationRunner {
     private FooService fooService;
 
     @Test
-    public void a_service_should_get_injected() {
-        assertThat(fooService.isEnabled(), is(true));
+    public void a_service_should_be_disabled_given_config_file_takes_effective() {
+        assertThat(fooService.isEnabled(), is(false));
     }
 }

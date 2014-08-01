@@ -1,8 +1,6 @@
 package com.github.hippoom.appconfig.sampleapp;
 
-import org.springframework.stereotype.Component;
 
-@Component
 public class ConfigurationFacade {
     private boolean fooServiceEnabled = true;
 
