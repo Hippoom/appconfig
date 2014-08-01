@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AService {
+public class FooService {
     @Autowired
     private ConfigurationFacade config;
 
     public boolean isEnabled() {
-        return config.isAServiceEnabled();
+        return config.isFooServiceEnabled();
     }
 
     public void setConfig(ConfigurationFacade config) {

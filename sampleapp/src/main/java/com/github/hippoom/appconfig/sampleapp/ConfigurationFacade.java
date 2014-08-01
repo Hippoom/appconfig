@@ -4,13 +4,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigurationFacade {
-    private boolean aServiceEnabled = true;
+    private boolean fooServiceEnabled = true;
 
-    public boolean isAServiceEnabled() {
-        return aServiceEnabled;
+    public boolean isFooServiceEnabled() {
+        return fooServiceEnabled;
     }
 
-    public void setAServiceEnabled(boolean enabled) {
-        this.aServiceEnabled = enabled;
+    public void setFooServiceEnabled(boolean enabled) {
+        this.fooServiceEnabled = enabled;
     }
 }

@@ -14,10 +14,10 @@ import static org.junit.Assert.assertThat;
 public class ApplicationRunner {
 
     @Autowired
-    private AService aService;
+    private FooService fooService;
 
     @Test
     public void a_service_should_get_injected() {
-        assertThat(aService.isEnabled(), is(true));
+        assertThat(fooService.isEnabled(), is(true));
     }
 }

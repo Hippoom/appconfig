@@ -6,8 +6,8 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AServiceTest {
-    private AService subject = new AService();
+public class FooServiceTest {
+    private FooService subject = new FooService();
 
     private ConfigurationFacade config = new ConfigurationFacade();
 
@@ -23,7 +23,7 @@ public class AServiceTest {
 
     @Test
     public void should_return_false_given_configured_disabled() {
-        config.setAServiceEnabled(false);
+        config.setFooServiceEnabled(false);
         assertThat(subject.isEnabled(), is(false));
     }
 }
