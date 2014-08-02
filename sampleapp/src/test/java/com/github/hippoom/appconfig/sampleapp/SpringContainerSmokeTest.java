@@ -1,5 +1,6 @@
 package com.github.hippoom.appconfig.sampleapp;
 
+import com.github.hippoom.appconfig.sampleapp.service.FooService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,13 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:root.xml")
-public class ApplicationRunner {
+public class SpringContainerSmokeTest {
 
     @Autowired
     private FooService fooService;
 
     @Test
-    public void a_service_should_get_injected() {
-        assertThat(fooService.isEnabled(), is(true));
+    public void a_service_should_be_disabled_given_config_file_takes_effective() {
+        assertThat(fooService.isEnabled(), is(false));
     }
 }

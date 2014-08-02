@@ -1,5 +1,7 @@
 package com.github.hippoom.appconfig.sampleapp;
 
+import com.github.hippoom.appconfig.sampleapp.config.ConfigurationFacade;
+import com.github.hippoom.appconfig.sampleapp.service.FooService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +11,7 @@ import static org.junit.Assert.assertThat;
 public class FooServiceTest {
     private FooService subject = new FooService();
 
-    private ConfigurationFacade config = new ConfigurationFacade();
+    private ConfigurationFacade config = new ConfigurationFacade(2, 2);
 
     @Before
     public void injects() {
