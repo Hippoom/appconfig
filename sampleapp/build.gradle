@@ -16,3 +16,7 @@ dependencies {
     testCompile group: 'org.springframework', name: 'spring-test', version: '3.2.6.RELEASE'
 
 }
+
+jettyRunWar {
+    httpPort = 9999
+}
