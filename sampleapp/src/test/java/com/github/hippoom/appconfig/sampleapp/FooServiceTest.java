@@ -9,7 +9,7 @@ import static org.junit.Assert.assertThat;
 public class FooServiceTest {
     private FooService subject = new FooService();
 
-    private ConfigurationFacade config = new ConfigurationFacade();
+    private ConfigurationFacade config = new ConfigurationFacade(2, 2);
 
     @Before
     public void injects() {
