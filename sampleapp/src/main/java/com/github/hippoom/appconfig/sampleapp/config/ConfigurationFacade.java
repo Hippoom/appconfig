@@ -1,4 +1,4 @@
-package com.github.hippoom.appconfig.sampleapp;
+package com.github.hippoom.appconfig.sampleapp.config;
 
 
 import static java.lang.String.format;

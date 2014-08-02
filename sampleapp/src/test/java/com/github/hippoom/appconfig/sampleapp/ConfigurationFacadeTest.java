@@ -1,6 +1,8 @@
 package com.github.hippoom.appconfig.sampleapp;
 
 
+import com.github.hippoom.appconfig.sampleapp.config.ConfigurationFacade;
+import com.github.hippoom.appconfig.sampleapp.config.IncompatibleConfigurationVersionException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
