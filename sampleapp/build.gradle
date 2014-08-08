@@ -6,17 +6,39 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     compile group: 'org.springframework', name: 'spring-webmvc', version: '3.2.6.RELEASE'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.7'
 
-    testCompile group:'junit', name:'junit', version:'4.11'
-    testCompile group:'org.hamcrest', name:'hamcrest-library', version:'1.3'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
     testCompile group: 'org.springframework', name: 'spring-test', version: '3.2.6.RELEASE'
 
 }
 
 jettyRunWar {
     httpPort = 9999
+    //webApp = file('build/distributions/sampleapp.war')
 }
+
+task substituteConfig(type: Zip) {
+    archiveName = 'sampleapp.war'
+    from zipTree('build/libs/sampleapp.war')
+    from(file('../sampleapp-config/at/2/config.properties')) {   // add new content
+        into "WEB-INF/classes"
+    }
+}
+
+task configArtifact {
+    //prepareUnconfigedArtifact.execute()
+    //substituteConfig.execute()
+}
+
+task deployArtifact(type: Copy) {
+    from 'build/distributions/sampleapp.war'
+    into 'build/libs'
+}
+
+substituteConfig.dependsOn war
+deployArtifact.dependsOn substituteConfig
+jettyRunWar.dependsOn deployArtifact
