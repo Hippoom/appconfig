@@ -17,9 +17,11 @@ dependencies {
 }
 
 jettyRunWar {
-    httpPort = 9999
-    //webApp = file('build/distributions/sampleapp.war')
+    httpPort = 9998
 }
+
+[jettyRunWar, jettyStop]*.stopKey = 'aStopKey'
+[jettyRunWar, jettyStop]*.stopPort = 9999
 
 task substituteConfig(type: Zip) {
     archiveName = 'sampleapp.war'
@@ -39,6 +41,16 @@ task deployArtifact(type: Copy) {
     into 'build/libs'
 }
 
-substituteConfig.dependsOn war
+task acceptanceTest() {
+    doFirst {
+        jettyRunWar.daemon = true
+        jettyRunWar.execute()
+    }
+    doLast {
+        jettyStop.execute()
+    }
+}
+
+
 deployArtifact.dependsOn substituteConfig
-jettyRunWar.dependsOn deployArtifact
+acceptanceTest.dependsOn deployArtifact
