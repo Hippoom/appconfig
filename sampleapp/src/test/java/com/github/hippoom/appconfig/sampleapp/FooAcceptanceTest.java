@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:root.xml")
+@ContextConfiguration("classpath:config.xml")
 public class FooAcceptanceTest {
     @Autowired
     private ConfigurationFacade config;

@@ -19,6 +19,20 @@ dependencies {
 
 }
 
+test {
+    exclude '**/*AcceptanceTest*'
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
+
+task packageTests(type: Jar, dependsOn: jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+}
+
+war.dependsOn packageTests
+
 jettyRunWar {
     httpPort = 9998
 }
@@ -26,7 +40,7 @@ jettyRunWar {
 [jettyRunWar, jettyStop]*.stopKey = 'aStopKey'
 [jettyRunWar, jettyStop]*.stopPort = 9999
 
-task substituteConfig(type: Zip) {
+task substituteWar(type: Zip) {
     archiveName = 'sampleapp.war'
     from zipTree('build/libs/sampleapp.war')
     from(file('../sampleapp-config/at/2/config.properties')) {   // add new content
@@ -34,13 +48,40 @@ task substituteConfig(type: Zip) {
     }
 }
 
-task deployArtifact(type: Copy) {
+task replaceConfiguredWar(type: Copy, dependsOn: substituteWar) {
     from 'build/distributions/sampleapp.war'
     into 'build/libs'
 }
 
-task acceptanceTest() {
+task extractJar(type: Copy) {
+    from zipTree('build/libs/sampleapp.jar')
+    into 'build/acceptanceTestDir'
+}
+
+task extractTestJar(type: Copy) {
+    from zipTree('build/libs/sampleapp-tests.jar')
+    into 'build/acceptanceTestDir'
+}
+
+task substituteTestConfig(type: Copy, dependsOn: [extractJar, extractTestJar]) {
+    from '../sampleapp-config/at/2/config.properties'
+    into 'build/acceptanceTestDir'
+}
+
+task acceptanceTest(type: Test) {
+    // exclude compile as this task will be executed at pipeline-at and all binaries are compiled
+    dependsOn = [replaceConfiguredWar, substituteTestConfig]
+    testClassesDir = file('build/acceptanceTestDir/')
+    classpath = classpath + files(testClassesDir)
+    include '**/*AcceptanceTest*'
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
     doFirst {
+
+        println "testClassesDir" + testClassesDir
+
+
         jettyRunWar.daemon = true
         jettyRunWar.execute()
     }
@@ -50,5 +91,3 @@ task acceptanceTest() {
 }
 
 
-deployArtifact.dependsOn substituteConfig
-acceptanceTest.dependsOn deployArtifact
