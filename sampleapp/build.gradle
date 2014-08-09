@@ -40,8 +40,8 @@ jettyRunWar {
 [jettyRunWar, jettyStop]*.stopKey = 'aStopKey'
 [jettyRunWar, jettyStop]*.stopPort = 9999
 
-ext.env = "${System.env.ENVIRONMENT}" ? "dev" : "${System.env.ENVIRONMENT}"
-ext.configVersion = "${System.env.CONFIG_VERSION}" ? "2" : "${System.env.CONFIG_VERSION}"
+ext.env = "${System.env.ENVIRONMENT}" == "null" ? "dev" : "${System.env.ENVIRONMENT}"
+ext.configVersion = "${System.env.CONFIG_VERSION}" == "null" ? "2" : "${System.env.CONFIG_VERSION}"
 ext.configDir = "../sampleapp-config/${env}/${configVersion}"
 
 println '============================      ' + System.getProperty("ENVIRONMENT")
