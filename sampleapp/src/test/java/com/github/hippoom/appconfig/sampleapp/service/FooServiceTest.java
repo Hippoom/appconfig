@@ -1,7 +1,6 @@
-package com.github.hippoom.appconfig.sampleapp;
+package com.github.hippoom.appconfig.sampleapp.service;
 
 import com.github.hippoom.appconfig.sampleapp.config.ConfigurationFacade;
-import com.github.hippoom.appconfig.sampleapp.service.FooService;
 import org.junit.Before;
 import org.junit.Test;
 
