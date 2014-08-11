@@ -41,8 +41,8 @@ jettyRunWar {
 [jettyRunWar, jettyStop]*.stopPort = 9999
 
 ext.env = "${System.env.ENVIRONMENT}" == "null" ? "dev" : "${System.env.ENVIRONMENT}"
-ext.configVersion = "${System.env.CONFIG_VERSION}" == "null" ? "2" : "${System.env.CONFIG_VERSION}"
-ext.configDir = "../sampleapp-config/${env}/${configVersion}"
+ext.configVersion = "${System.env.CONFIG_VERSION}" == "null" ? "v2" : "${System.env.CONFIG_VERSION}"
+ext.configDir = "build/config/${configVersion}"
 
 println '============================      ' + System.getProperty("ENVIRONMENT")
 println '============================      ' + System.getProperty("CONFIG_VERSION")
@@ -90,10 +90,6 @@ task acceptanceTest(type: Test) {
         events "passed", "skipped", "failed", "standardOut", "standardError"
     }
     doFirst {
-
-        println "testClassesDir" + testClassesDir
-
-
         jettyRunWar.daemon = true
         jettyRunWar.execute()
     }
@@ -102,4 +98,19 @@ task acceptanceTest(type: Test) {
     }
 }
 
+import org.ajoberstar.grgit.Grgit
 
+task loadConfig() << {
+    def dir = new File('build/config')
+    def grgit = dir.exists() ? Grgit.open(dir) : Grgit.clone(dir: new File('build/config'), uri: 'https://github.com/Hippoom/appconfig-config.git')
+    grgit.checkout(branch: "origin/at")
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.ajoberstar:gradle-git:0.9.0'
+    }
+}
