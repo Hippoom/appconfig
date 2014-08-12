@@ -57,7 +57,14 @@ jettyRunWar {
 
 ext.env = "${System.env.ENVIRONMENT}" == "null" ? System.getProperty("ENVIRONMENT") : "${System.env.ENVIRONMENT}"
 
-def configDir() { "build/config/" + configVersion() }
+def configVersion() {
+    Manifests.append(new File('build/expected_config/META-INF/MANIFEST.MF'))
+    Manifests.read("ExpectedConfigVersion")
+}
+
+def configDir() {
+    "build/config/" + configVersion()
+}
 
 
 import com.jcabi.manifests.Manifests
@@ -92,23 +99,23 @@ task fetchExpectedConfigVersion(type: Copy) {
     into 'build/expected_config'
 }
 
-def configVersion() {
-    Manifests.append(new File('build/expected_config/META-INF/MANIFEST.MF'))
-    Manifests.read("ExpectedConfigVersion")
+task substituteTestConfig(dependsOn: [extractJar, extractTestJar, fetchExpectedConfigVersion]) << {
+    println '====================================================>>>>>>>>'
+    tasks.create(name: 'hello4', type: Copy) {
+        from configDir()
+        into 'build/acceptanceTestDir'
+    }.execute()
 }
 
-task substituteTestConfig(type: Copy, dependsOn: [extractJar, extractTestJar, fetchExpectedConfigVersion]) {
-    println '============>substituteTestConfig ' + configDir()
-    from configDir()
-    into 'build/acceptanceTestDir'
-}
-
-task substituteWar(type: Zip, dependsOn: fetchExpectedConfigVersion) {
-    archiveName = 'sampleapp.war'
-    from zipTree('build/libs/sampleapp.war')
-    from(file(configDir())) {   // add new content
-        into "WEB-INF/classes"
-    }
+task substituteWar(dependsOn: fetchExpectedConfigVersion) << {
+    println '====================================================<<<<<<<<'
+    tasks.create(name: 'hello5', type: Zip) {
+        archiveName = 'sampleapp.war'
+        from zipTree('build/libs/sampleapp.war')
+        from(file(configDir())) {   // add new content
+            into "WEB-INF/classes"
+        }
+    }.execute()
 }
 
 task replaceConfiguredWar(type: Copy, dependsOn: substituteWar) {
@@ -137,6 +144,8 @@ task acceptanceTest(type: Test) {
 
 
 buildscript {
+
+
     repositories {
         mavenCentral()
     }
