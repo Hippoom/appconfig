@@ -55,9 +55,9 @@ jettyRunWar {
 [jettyRunWar, jettyStop]*.stopKey = 'aStopKey'
 [jettyRunWar, jettyStop]*.stopPort = 9999
 
-ext.env = "${System.env.ENVIRONMENT}" == "null" ? "dev" : "${System.env.ENVIRONMENT}"
-ext.configVersion = null
-ext.configDir = "build/config/${configVersion}"
+ext.env = "${System.env.ENVIRONMENT}" == "null" ? System.getProperty("ENVIRONMENT") : "${System.env.ENVIRONMENT}"
+
+def configDir() { "build/config/" + configVersion() }
 
 
 import com.jcabi.manifests.Manifests
@@ -67,16 +67,12 @@ task loadConfig() << {
     println '============================' + System.getProperty("ENVIRONMENT")
     println '============================' + "${System.env.ENVIRONMENT}"
     println '============================' + env
-    println '============================' + configVersion
-    println '============================' + configDir
 
     def dir = new File('build/config')
     def grgit = dir.exists() ? Grgit.open(dir) : Grgit.clone(dir: new File('build/config'), uri: 'https://github.com/Hippoom/appconfig-config.git')
     grgit.checkout(branch: "origin/${env}")
 
 
-    println '============================' + configVersion
-    println '============================' + configDir
 }
 
 
@@ -96,26 +92,21 @@ task fetchExpectedConfigVersion(type: Copy) {
     into 'build/expected_config'
 }
 
-task loadExpectedConfigVersion(dependsOn: fetchExpectedConfigVersion) << {
+def configVersion() {
     Manifests.append(new File('build/expected_config/META-INF/MANIFEST.MF'))
-    configVersion = Manifests.read("ExpectedConfigVersion")
-    configDir = "build/config/${configVersion}"
-
-    println '============================' + configVersion
-    println '============================' + configDir
+    Manifests.read("ExpectedConfigVersion")
 }
 
-task substituteTestConfig(type: Copy, dependsOn: [extractJar, extractTestJar, loadExpectedConfigVersion]) {
-    println '============================' + configDir
-    from configDir
+task substituteTestConfig(type: Copy, dependsOn: [extractJar, extractTestJar, fetchExpectedConfigVersion]) {
+    println '============>substituteTestConfig ' + configDir()
+    from configDir()
     into 'build/acceptanceTestDir'
 }
 
-task substituteWar(type: Zip, dependsOn: loadExpectedConfigVersion) {
-    println '============================' + configDir
+task substituteWar(type: Zip, dependsOn: fetchExpectedConfigVersion) {
     archiveName = 'sampleapp.war'
     from zipTree('build/libs/sampleapp.war')
-    from(file(configDir)) {   // add new content
+    from(file(configDir())) {   // add new content
         into "WEB-INF/classes"
     }
 }
