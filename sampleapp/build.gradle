@@ -104,7 +104,7 @@ task loadConfig() << {
     def dir = new File('build/config')
     def grgit = dir.exists() ? Grgit.open(dir) : Grgit.clone(dir: new File('build/config'), uri: 'https://github.com/Hippoom/appconfig-config.git')
     //grgit.pull(rebase: true)
-    grgit.checkout(branch: "origin／${env}")
+    grgit.checkout(branch: "origin/${env}")
 }
 
 buildscript {
