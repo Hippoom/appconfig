@@ -1,6 +1,7 @@
 package com.github.hippoom.appconfig.sampleapp.config;
 
 
+import com.jcabi.manifests.Manifests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,16 +12,20 @@ import static java.lang.String.format;
 public class ConfigurationFacade {
     private final Logger logger = LoggerFactory.getLogger(ConfigurationFacade.class);
 
-    private final int expectedVersion;
+    private final String expectedVersion;
 
-    private final int actualVersion;
+    private final String actualVersion;
     private String environment = "dev";
     private boolean fooServiceEnabled = true;
 
-    public ConfigurationFacade(int expectedVersion, int actualVersion) {
+    public ConfigurationFacade(String expectedVersion, String actualVersion) {
         this.expectedVersion = expectedVersion;
         this.actualVersion = actualVersion;
         validateVersion(this.expectedVersion, this.actualVersion);
+    }
+
+    public ConfigurationFacade(String actualVersion) {
+        this(Manifests.read("ExpectedConfigVersion"), actualVersion);
     }
 
     public boolean isFooServiceEnabled() {
@@ -31,10 +36,10 @@ public class ConfigurationFacade {
         this.fooServiceEnabled = enabled;
     }
 
-    private void validateVersion(int expectedVersion, int actualVersion) {
-        if (expectedVersion != actualVersion) {
+    private void validateVersion(String expectedVersion, String actualVersion) {
+        if (!expectedVersion.equals(actualVersion)) {
             throw new IncompatibleConfigurationVersionException(
-                    format("Incompatible configuration version detected, expect <%d> but got <%d>.",
+                    format("Incompatible configuration version detected, expect <%s> but got <%s>.",
                             expectedVersion, actualVersion));
         }
     }
@@ -42,7 +47,7 @@ public class ConfigurationFacade {
     @PostConstruct
     public void printVersionAndEnvironment() {
         logger.info(format(
-                "================>config version & environment:%d,%s", this.actualVersion, this.environment));
+                "[Application Configuration Management] config version & environment:%s,%s", this.actualVersion, this.environment));
     }
 
     public String getEnvironment() {

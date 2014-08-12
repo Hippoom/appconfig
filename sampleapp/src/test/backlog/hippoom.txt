@@ -1,3 +1,5 @@
 1.Refactor build.gradle: eliminate duplicate version declaration of spring dependencies.
 2.How to declare dependence as provided
 3.Difference between task {} and task << {}
+4.Pipeline should fetch config version from artifact instead of assigning.
+5.Pipeline stages commit->at->uat->performance->production

@@ -9,6 +9,7 @@ repositories {
 dependencies {
     compile group: 'org.springframework', name: 'spring-webmvc', version: '3.2.6.RELEASE'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.7'
+    compile 'com.jcabi:jcabi-manifests:1.0.3'
 
     compile group: 'javax.servlet', name: 'servlet-api', version: '2.5'//should be provided
 
@@ -26,12 +27,26 @@ test {
     }
 }
 
+jar {
+    manifest {
+        from 'build/resources/main/META-INF/MANIFEST.MF'
+    }
+}
+
 task packageTests(type: Jar, dependsOn: jar) {
     classifier = 'tests'
     from sourceSets.test.output
+    manifest {
+        from 'build/resources/main/META-INF/MANIFEST.MF'
+    }
 }
 
-war.dependsOn packageTests
+war {
+    dependsOn packageTests
+    manifest {
+        from 'build/resources/main/META-INF/MANIFEST.MF'
+    }
+}
 
 jettyRunWar {
     httpPort = 9998
@@ -41,29 +56,30 @@ jettyRunWar {
 [jettyRunWar, jettyStop]*.stopPort = 9999
 
 ext.env = "${System.env.ENVIRONMENT}" == "null" ? "dev" : "${System.env.ENVIRONMENT}"
-ext.configVersion = "${System.env.CONFIG_VERSION}" == "null" ? "v2" : "${System.env.CONFIG_VERSION}"
+ext.configVersion = null
 ext.configDir = "build/config/${configVersion}"
 
-println '============================      ' + System.getProperty("ENVIRONMENT")
-println '============================      ' + System.getProperty("CONFIG_VERSION")
-println '============================      ' + "${System.env.ENVIRONMENT}"
-println '============================      ' + "${System.env.CONFIG_VERSION}"
-println '============================      ' + ext.env
-println '============================      ' + ext.configVersion
-println '============================      ' + ext.configDir
 
-task substituteWar(type: Zip) {
-    archiveName = 'sampleapp.war'
-    from zipTree('build/libs/sampleapp.war')
-    from(file(configDir)) {   // add new content
-        into "WEB-INF/classes"
-    }
+import com.jcabi.manifests.Manifests
+import org.ajoberstar.grgit.Grgit
+
+task loadConfig() << {
+    println '============================' + System.getProperty("ENVIRONMENT")
+    println '============================' + "${System.env.ENVIRONMENT}"
+    println '============================' + env
+    println '============================' + configVersion
+    println '============================' + configDir
+
+    def dir = new File('build/config')
+    def grgit = dir.exists() ? Grgit.open(dir) : Grgit.clone(dir: new File('build/config'), uri: 'https://github.com/Hippoom/appconfig-config.git')
+    grgit.checkout(branch: "origin/${env}")
+
+
+    println '============================' + configVersion
+    println '============================' + configDir
 }
 
-task replaceConfiguredWar(type: Copy, dependsOn: substituteWar) {
-    from 'build/distributions/sampleapp.war'
-    into 'build/libs'
-}
+
 
 task extractJar(type: Copy) {
     from zipTree('build/libs/sampleapp.jar')
@@ -75,9 +91,36 @@ task extractTestJar(type: Copy) {
     into 'build/acceptanceTestDir'
 }
 
-task substituteTestConfig(type: Copy, dependsOn: [extractJar, extractTestJar]) {
+task fetchExpectedConfigVersion(type: Copy) {
+    from zipTree('build/libs/sampleapp.war')
+    into 'build/expected_config'
+}
+
+task loadExpectedConfigVersion(dependsOn: fetchExpectedConfigVersion) << {
+    Manifests.append(new File('build/expected_config/META-INF/MANIFEST.MF'))
+    configVersion = Manifests.read("ExpectedConfigVersion")
+    configDir = "build/config/${configVersion}"
+
+    println '============================' + configVersion
+    println '============================' + configDir
+}
+
+task substituteTestConfig(type: Copy, dependsOn: [extractJar, extractTestJar, loadExpectedConfigVersion]) {
     from configDir
     into 'build/acceptanceTestDir'
+}
+
+task substituteWar(type: Zip, dependsOn: loadExpectedConfigVersion) {
+    archiveName = 'sampleapp.war'
+    from zipTree('build/libs/sampleapp.war')
+    from(file(configDir)) {   // add new content
+        into "WEB-INF/classes"
+    }
+}
+
+task replaceConfiguredWar(type: Copy, dependsOn: substituteWar) {
+    from 'build/distributions/sampleapp.war'
+    into 'build/libs'
 }
 
 task acceptanceTest(type: Test) {
@@ -98,14 +141,7 @@ task acceptanceTest(type: Test) {
     }
 }
 
-import org.ajoberstar.grgit.Grgit
 
-task loadConfig() << {
-    def dir = new File('build/config')
-    def grgit = dir.exists() ? Grgit.open(dir) : Grgit.clone(dir: new File('build/config'), uri: 'https://github.com/Hippoom/appconfig-config.git')
-    //grgit.pull(rebase: true)
-    grgit.checkout(branch: "origin/${env}")
-}
 
 buildscript {
     repositories {
@@ -113,5 +149,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.ajoberstar:gradle-git:0.9.0'
+        classpath 'com.jcabi:jcabi-manifests:1.0.3'
+        classpath 'javax.servlet:servlet-api:2.5'
     }
 }

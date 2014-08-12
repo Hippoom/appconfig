@@ -18,12 +18,12 @@ public class ConfigurationFacadeTest {
         thrown.expect(IncompatibleConfigurationVersionException.class);
         thrown.expectMessage(equalTo("Incompatible configuration version detected, expect <2> but got <1>."));
 
-        new ConfigurationFacade(2, 1);
+        new ConfigurationFacade("2", "1");
     }
 
     @Test
     public void should_pass_when_validate_given_compatible_config_version() {
 
-        new ConfigurationFacade(2, 2);
+        new ConfigurationFacade("2", "2");
     }
 }

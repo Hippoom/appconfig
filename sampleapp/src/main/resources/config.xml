@@ -10,7 +10,6 @@
     <context:property-placeholder location="classpath:config.properties"/>
 
     <bean class="com.github.hippoom.appconfig.sampleapp.config.ConfigurationFacade">
-        <constructor-arg name="expectedVersion" value="2"/>
         <constructor-arg name="actualVersion" value="${configVersion}"/>
         <property name="environment" value="${configEnvironment}"/>
         <property name="fooServiceEnabled" value="${fooServiceEnabled}"/>
