@@ -106,11 +106,13 @@ task loadExpectedConfigVersion(dependsOn: fetchExpectedConfigVersion) << {
 }
 
 task substituteTestConfig(type: Copy, dependsOn: [extractJar, extractTestJar, loadExpectedConfigVersion]) {
+    println '============================' + configDir
     from configDir
     into 'build/acceptanceTestDir'
 }
 
 task substituteWar(type: Zip, dependsOn: loadExpectedConfigVersion) {
+    println '============================' + configDir
     archiveName = 'sampleapp.war'
     from zipTree('build/libs/sampleapp.war')
     from(file(configDir)) {   // add new content
