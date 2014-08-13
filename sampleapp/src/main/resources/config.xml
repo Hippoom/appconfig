@@ -13,5 +13,6 @@
         <constructor-arg name="actualVersion" value="${configVersion}"/>
         <property name="environment" value="${configEnvironment}"/>
         <property name="fooServiceEnabled" value="${fooServiceEnabled}"/>
+        <property name="anotherServiceUrl" value="${anotherServiceUrl}"/>
     </bean>
 </beans>

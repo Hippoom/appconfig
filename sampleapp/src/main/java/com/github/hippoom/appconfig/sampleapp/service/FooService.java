@@ -28,4 +28,8 @@ public class FooService {
     public void setConfig(ConfigurationFacade config) {
         this.config = config;
     }
+
+    public String anotherServiceUrl() {
+        return config.getAnotherServiceUrl();
+    }
 }

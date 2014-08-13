@@ -17,6 +17,7 @@ public class ConfigurationFacade {
     private final String actualVersion;
     private String environment = "dev";
     private boolean fooServiceEnabled = true;
+    private String anotherServiceUrl = "http://bar.com/api";
 
     public ConfigurationFacade(String expectedVersion, String actualVersion) {
         this.expectedVersion = expectedVersion;
@@ -56,5 +57,13 @@ public class ConfigurationFacade {
 
     public void setEnvironment(String environment) {
         this.environment = environment;
+    }
+
+    public String getAnotherServiceUrl() {
+        return anotherServiceUrl;
+    }
+
+    public void setAnotherServiceUrl(String anotherServiceUrl) {
+        this.anotherServiceUrl = anotherServiceUrl;
     }
 }

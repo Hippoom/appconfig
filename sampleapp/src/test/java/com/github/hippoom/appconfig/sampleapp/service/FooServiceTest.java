@@ -4,6 +4,7 @@ import com.github.hippoom.appconfig.sampleapp.config.ConfigurationFacade;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -26,5 +27,10 @@ public class FooServiceTest {
     public void should_return_false_given_configured_disabled() {
         config.setFooServiceEnabled(false);
         assertThat(subject.isEnabled(), is(false));
+    }
+
+    @Test
+    public void should_return_url_of_another_service() {
+        assertThat(subject.anotherServiceUrl(), equalTo(config.getAnotherServiceUrl()));
     }
 }

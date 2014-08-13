@@ -8,6 +8,7 @@
 8.Modify configuration value
 9.Add / Modify configuration key
 10.Merge configuration key in concurrent development team?
+11.Add log4j
 
 
 
