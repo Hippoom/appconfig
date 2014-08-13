@@ -100,16 +100,14 @@ task fetchExpectedConfigVersion(type: Copy) {
 }
 
 task substituteTestConfig(dependsOn: [extractJar, extractTestJar, fetchExpectedConfigVersion]) << {
-    println '====================================================>>>>>>>>'
-    tasks.create(name: 'hello4', type: Copy) {
+    tasks.create(name: 'doSubstituteTestConfig', type: Copy) {
         from configDir()
         into 'build/acceptanceTestDir'
     }.execute()
 }
 
 task substituteWar(dependsOn: fetchExpectedConfigVersion) << {
-    println '====================================================<<<<<<<<'
-    tasks.create(name: 'hello5', type: Zip) {
+    tasks.create(name: 'doSubstituteWar', type: Zip) {
         archiveName = 'sampleapp.war'
         from zipTree('build/libs/sampleapp.war')
         from(file(configDir())) {   // add new content

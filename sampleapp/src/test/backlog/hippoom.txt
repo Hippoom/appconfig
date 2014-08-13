@@ -1,5 +1,35 @@
 1.Refactor build.gradle: eliminate duplicate version declaration of spring dependencies.
 2.How to declare dependence as provided
-3.Difference between task {} and task << {}
-4.Pipeline should fetch config version from artifact instead of assigning.
+3.[Done] Difference between task {} and task << {}
+4.[Done] Pipeline should fetch config version from artifact instead of assigning.
 5.Pipeline stages commit->at->uat->performance->production
+6.Dev --> Pipeline
+7.Smoke test for configuration
+8.Modify configuration value
+9.Add / Modify configuration key
+10.Merge configuration key in concurrent development team?
+
+
+
+
+ __commit
+     |___compile
+           |___config [pending]
+                  |___run commit test and upload test report
+                           |___package and upload artifacts
+                           (build script, sampleapp.jar, sampleapp-tests.jar, sampleapp.war)
+  ______________________________|
+ |  ____________________________________|
+ | |
+ | |__at
+ |    |___fetch artifacts
+ |          |___config
+ |                |___run env smoke test [pending]
+ |                      |___run acceptance test and upload test report
+ |                              |
+ |        ______________________|
+ |       |
+ |__(manual) uat
+              |___fetch artifacts
+                     |___config
+                            |___run env smoke test [pending]
