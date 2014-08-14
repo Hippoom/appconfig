@@ -5,10 +5,11 @@
 5.Pipeline stages commit->at->uat->performance->production
 6.Dev --> Pipeline
 7.Smoke test for configuration
-8.Modify configuration value
-9.Add / Modify configuration key
+8.[Done] Modify configuration value
+9.[Done] Add / Modify configuration key
 10.Merge configuration key in concurrent development team?
 11.Add log4j
+12.Spike on env/version branch instead of env branch
 
 
 

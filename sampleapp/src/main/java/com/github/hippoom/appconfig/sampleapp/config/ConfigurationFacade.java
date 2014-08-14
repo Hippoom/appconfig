@@ -49,6 +49,8 @@ public class ConfigurationFacade {
     public void printVersionAndEnvironment() {
         logger.info(format(
                 "[Application Configuration Management] config version & environment:%s,%s", this.actualVersion, this.environment));
+        logger.info(format("[Application Configuration Management] fooServiceEnabled:%b", this.fooServiceEnabled));
+        logger.info(format("[Application Configuration Management] anotherServiceUrl:%s", this.anotherServiceUrl));
     }
 
     public String getEnvironment() {

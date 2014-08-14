@@ -2,6 +2,8 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'jetty'
 
+ext.env = "${System.env.ENVIRONMENT}" == "null" ? System.getProperty("ENVIRONMENT") : "${System.env.ENVIRONMENT}"
+
 repositories {
     mavenCentral()
 }
@@ -20,10 +22,29 @@ dependencies {
 
 }
 
+
 test {
     exclude '**/*AcceptanceTest*'
     testLogging {
         events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+    doFirst {
+        if (env != null) {
+            tasks.create(name: 'fetchConfigVersionForCommit', type: Copy) {
+                from 'build/resources/main/META-INF/MANIFEST.MF'
+                into 'build/expected_config/META-INF'
+            }.execute()
+
+            loadConfig.execute()
+
+            tasks.create(name: 'doSubstituteCommitTestConfig', type: Copy) {
+                doFirst {
+                    assert file(configDir()).exists()
+                }
+                from configDir()
+                into 'build/resources/main'
+            }.execute()
+        }
     }
 }
 
@@ -55,7 +76,6 @@ jettyRunWar {
 [jettyRunWar, jettyStop]*.stopKey = 'aStopKey'
 [jettyRunWar, jettyStop]*.stopPort = 9999
 
-ext.env = "${System.env.ENVIRONMENT}" == "null" ? System.getProperty("ENVIRONMENT") : "${System.env.ENVIRONMENT}"
 
 def configVersion() {
     Manifests.append(new File('build/expected_config/META-INF/MANIFEST.MF'))
@@ -81,6 +101,7 @@ task loadConfig() << {
 
 
 }
+
 
 
 
